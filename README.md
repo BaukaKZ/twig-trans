@@ -15,7 +15,7 @@ This extension enables Twig templates to use `|trans` and `{% trans %}` + `{% en
 ## Install
 
 ```shell
-composer require jblond/twig-trans
+composer require BaukaKZ/twig-trans
 ```
 
 ## Example Use
@@ -84,7 +84,7 @@ echo $tpl->render(['key1' => 'value1', 'key2' => 'value2']);
 
 * PHP 7.2 or greater
 * PHP Multibyte String ' gettext'
-* Twig >= 3.0
+* Twig >= 3.12
 
 ### Optional Requirements
 
