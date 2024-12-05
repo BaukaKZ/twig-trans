@@ -2,12 +2,14 @@
 
 namespace jblond\TwigTrans;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Expression\NameExpression;
 use Twig\Node\Expression\TempNameExpression;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\Node;
 use Twig\Node\PrintNode;
 
@@ -15,6 +17,7 @@ use Twig\Node\PrintNode;
  * Class TransNode
  * @package jblond\TwigTrans
  */
+#[YieldReady]
 class TransNode extends Node
 {
     /**
@@ -45,7 +48,7 @@ class TransNode extends Node
             $nodes['notes'] = $notes;
         }
 
-        parent::__construct($nodes, [], $lineNo, $tag);
+        parent::__construct($nodes, [], $lineNo);
     }
 
     /**
@@ -54,7 +57,7 @@ class TransNode extends Node
     public function compile(Compiler $compiler): void
     {
         $compiler->addDebugInfo($this);
-        $msg1 = new Node();
+        $msg1 = new EmptyNode();
 
         [$msg, $vars] = $this->compileString($this->getNode('body'));
 
@@ -76,7 +79,7 @@ class TransNode extends Node
 
         if ($vars) {
             $compiler
-                ->write('echo strtr(' . $function . '(')
+                ->write('yield strtr(' . $function . '(')
                 ->subcompile($msg)
             ;
 
@@ -85,7 +88,7 @@ class TransNode extends Node
                     ->raw(', ')
                     ->subcompile($msg1)
                     ->raw(', abs(')
-                    ->subcompile($this->hasNode('count') ? $this->getNode('count') : new Node())
+                    ->subcompile($this->hasNode('count') ? $this->getNode('count') : new EmptyNode())
                     ->raw(')')
                 ;
             }
@@ -97,7 +100,7 @@ class TransNode extends Node
                     $compiler
                         ->string('%count%')
                         ->raw(' => abs(')
-                        ->subcompile($this->hasNode('count') ? $this->getNode('count') : new Node())
+                        ->subcompile($this->hasNode('count') ? $this->getNode('count') : new EmptyNode())
                         ->raw('), ')
                     ;
                 } else {
@@ -113,7 +116,7 @@ class TransNode extends Node
             $compiler->raw("));\n");
         } else {
             $compiler
-                ->write('echo ' . $function . '(')
+                ->write('yield ' . $function . '(')
                 ->subcompile($msg)
             ;
 
@@ -122,7 +125,7 @@ class TransNode extends Node
                     ->raw(', ')
                     ->subcompile($msg1)
                     ->raw(', abs(')
-                    ->subcompile($this->hasNode('count') ? $this->getNode('count') : new Node())
+                    ->subcompile($this->hasNode('count') ? $this->getNode('count') : new EmptyNode())
                     ->raw(')')
                 ;
             }
@@ -162,7 +165,7 @@ class TransNode extends Node
                         $n = $n->getNode('node');
                     }
                     $msg .= sprintf('%%%s%%', $n->getAttribute('name'));
-                    $vars[] = new NameExpression($n->getAttribute('name'), $n->getTemplateLine());
+                    $vars[] = new ContextVariable($n->getAttribute('name'), $n->getTemplateLine());
                 } else {
                     $msg .= $node->getAttribute('data');
                 }
@@ -171,7 +174,7 @@ class TransNode extends Node
             $msg = $body->getAttribute('data');
         }
 
-        return [new Node([new ConstantExpression(trim($msg), $body->getTemplateLine())]), $vars];
+        return [new EmptyNode([new ConstantExpression(trim($msg), $body->getTemplateLine())]), $vars];
     }
 
     /**

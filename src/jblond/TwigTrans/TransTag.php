@@ -14,6 +14,7 @@ use Twig\TokenParser\AbstractTokenParser;
  * Class TransTag
  * @package jblond\TwigTrans
  */
+#[YieldReady]
 class TransTag extends AbstractTokenParser
 {
     /**

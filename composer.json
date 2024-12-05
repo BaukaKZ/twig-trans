@@ -1,5 +1,5 @@
 {
-    "name": "jblond/twig-trans",
+    "name": "BaukaKZ/twig-trans",
     "type": "library",
     "description": "Twig 3 translation extension ",
     "license": "MIT",
@@ -22,7 +22,7 @@
         "php": ">=7.2",
         "ext-gettext": "*",
         "ext-mbstring": "*",
-        "twig/twig": ">=3.0.0"
+        "twig/twig": ">=3.12"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
